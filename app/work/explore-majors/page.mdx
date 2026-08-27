@@ -1,0 +1,134 @@
+# Explore Majors: Building a Content Model for Postsecondary Discovery
+
+**Role:** Sr. Manager, Digital Content Strategy — T3 Partnership
+**Product:** Pathways to Careers (P2C), a college and career readiness platform
+**Timeframe:** [FILL IN — start month/year to end month/year]
+**Scope:** Solo content strategy and content modeling; handed off to Data & Analytics and external web development
+**Tools:** Airtable, Codex, Claude, institutional catalogs, Texas CTE program standards, IPEDS/CIP
+
+---
+
+## Context
+
+Pathways to Careers is a college and career readiness platform serving roughly 10,000 students and family members across seven North Texas school districts, including Fort Worth ISD, Crowley ISD, Castleberry ISD, Grand Prairie ISD, Lake Worth ISD, Everman ISD, and Lamar High School in Arlington ISD.
+
+P2C's exploration experience was designed as a three-step progression: students move from **Explore Career Clusters** to **Explore Majors** to **Explore Programs**, narrowing from a broad interest area to a specific degree at a specific institution they could actually apply to.
+
+Explore Majors was the middle step — and the one with no underlying data to support it.
+
+## The Problem
+
+The product team wanted students to browse majors offered by our eight partner institutions of higher education, filtered by interest and connected to the career clusters they'd already explored. Four things stood in the way:
+
+**The source data was eight incompatible catalogs.** Each institution published its own program list with its own naming conventions, its own credential labels, and its own descriptions. The same field of study appeared as "Digital Media Studies" at one school and "Film/Radio/Television/Digital Media" at another. Nothing joined.
+
+**Texas has a career cluster taxonomy, and it doesn't cover higher education.** The state's CTE framework organizes 14 career clusters around workforce and technical pathways. It works well for high school CTE programs. It does not accommodate the academic majors a comprehensive university offers — there is no home in it for Philosophy, Anthropology, English Literature, or Comparative Race and Ethnic Studies.
+
+**Credential types were inconsistent across institutions.** A two-year college's "Certificate Level I" and a university's "Field of Study" and "Minor" aren't the same thing, but students comparing options need to understand them side by side.
+
+**Nothing connected majors to student interest.** P2C already used RIASEC interest inventories elsewhere in the platform. Explore Majors needed to inherit that, and no institution publishes RIASEC codes with its catalog.
+
+## What I Built
+
+A relational content model in Airtable with nine linked tables, covering **539 undergraduate degree records** across **8 institutions**, organized into **71 programs of study** and **15 career clusters**.
+
+| Table | What it holds |
+|---|---|
+| IHE List | The eight partner institutions |
+| Career Clusters | Top-level interest areas, with descriptions and URL slugs |
+| Programs of Study | Mid-level groupings within clusters |
+| Majors | Canonical major records with consolidated descriptions |
+| Degree Options | Controlled vocabulary of credential types |
+| Undergraduate Degrees | Institution-specific offerings, the join layer |
+| Graduate Degrees / Graduate Programs | Parallel structure for graduate study |
+| Occupational Programs | Workforce and technical credentials |
+
+Each institution-specific record carries: major name, institution, degree options offered, campus location(s), CIP code, RIASEC tags, ordered RIASEC code, program of study, and career cluster.
+
+## Key Decisions
+
+### 1. I used federal CIP codes as the join key
+
+Rather than matching majors by name — which fails immediately across eight catalogs — I assigned each record its **Classification of Instructional Programs** code, the federal standard used in IPEDS reporting.
+
+*Why:* Name matching would have required maintaining a fragile alias list forever. CIP codes gave me a stable identifier that every institution already reports against, which meant Geoscience at Tarleton and Earth Systems Science elsewhere could be recognized as related without a human deciding case by case. It also means the model can be joined to any federal education dataset later — BLS wage data, IPEDS completions, state workforce projections. Choosing an external standard over an internal one cost more up front and made the model interoperable.
+
+### 2. I extended the state taxonomy rather than forcing a fit
+
+Roughly [FILL IN — how many? "several dozen"?] majors had no reasonable home in the state's 14 clusters. Two options: force them into the nearest cluster, or extend the taxonomy.
+
+I created a **fifteenth career cluster, Humanities & Social Sciences**, with four programs of study beneath it:
+
+- Behavioral & Social Sciences (Anthropology, Psychology, Sociology, Social Science, Women and Gender Studies, Comparative Race and Ethnic Studies, Composition)
+- History & Global Studies (History, Geography, International Studies)
+- Languages & Cultural Studies (English, English Literature, Creative Writing, Linguistics, Modern Language Studies, Sign Language, Hispanic & Latin American Studies)
+- Humanities & Liberal Arts (Philosophy, Religion, Critical Studies, Multidisciplinary Studies, Applied Arts and Sciences, Professional Studies)
+
+I also added programs of study within the existing Arts, A/V Technology and Communications cluster — including **Graphic Design and Interactive Media** and **Fine & Performing Arts** — because the state's granularity was too coarse for the range of arts degrees our partners offered.
+
+*Why:* Misfiling a major isn't a cosmetic problem. A student interested in psychology who finds it filed under Human Services alongside cosmetology learns something false about what that degree is. Forcing the fit would have preserved compliance with the state framework at the cost of the thing the product exists to do. Extending it preserved compatibility — the original 14 clusters are intact and still map to state standards — while making the model honest about what higher education actually offers.
+
+*The tradeoff I accepted:* the model is no longer a pure implementation of the state taxonomy, so anyone reusing it needs to know where it diverges. That's a documentation cost, and it was worth paying.
+
+### 3. I established one canonical description per major
+
+Eight institutions described the same major eight different ways, with varying length, tone, reading level, and emphasis. Displaying all eight would have been noise. Picking one institution's version would have privileged that school.
+
+I created a **Consolidated Description** field: one canonical, institution-neutral description per major, written to a consistent voice and reading level for middle and high school students and their families.
+
+*Process:* I gathered the original descriptions from all eight catalogs, used Claude to synthesize a draft canonical version for each major, then reviewed and refined every one against the source material — checking that the synthesis hadn't dropped a distinguishing detail, drifted into jargon, or flattened a genuine difference between similar majors.
+
+*Why:* Establishing a single source of truth is what makes downstream consistency possible. Without it, every surface that displays a major — cards, detail pages, search results, comparison views — would have to make its own decision about which description to use.
+
+### 4. I preserved RIASEC code order
+
+Every major carries three RIASEC interest tags, plus an ordered three-letter code: **IRC**, **REI**, **AES**.
+
+*Why:* In Holland's framework, the sequence carries meaning. A major coded IRC is primarily Investigative; one coded RIC is primarily Realistic. Storing the tags as an unordered set would have destroyed information that the platform's interest matching depends on. Keeping both the tag field (for filtering and display) and the ordered code (for matching) meant the model could serve both needs without one compromising the other.
+
+*Reusability:* The alignment method I developed here — how to reason from a major's actual coursework to its interest profile, and how to handle edge cases where a major spans two dominant types — is documented and is being reused for [The Lifestyle Calculator / other P2C features]. It's a repeatable process, not a one-time pass.
+
+### 5. I built review state into the model
+
+Records carry QA fields — a "Good to go" indicator on majors and a "Checked Field" flag on institution-specific offerings — so review status lives with the content instead of in a separate tracker or someone's memory.
+
+*Why:* This was a solo build across 539 records over [FILL IN duration]. Without review state in the model, I'd have had no reliable way to know what had been verified against the source catalog, and neither would anyone inheriting it.
+
+### 6. I prepared the model for delivery, not just for storage
+
+Career clusters carry URL slugs (`agriculture-food-natural-resources`, `health-science`). Degree Options is a controlled vocabulary rather than free text. Locations are structured per institution and campus.
+
+*Why:* The model's consumers were a Data & Analytics team and an external web development vendor. Handing them a well-structured, delivery-ready model rather than a spreadsheet meant fewer decisions got made ad hoc during implementation — which is where content consistency usually breaks down.
+
+## AI in the Workflow
+
+I used Claude for two bounded tasks: synthesizing canonical major descriptions from eight source catalogs, and proposing RIASEC alignments for 539 records.
+
+What made this work was treating AI as a drafting layer inside a governed process, not a replacement for judgment:
+
+- **Sourcing stayed human.** All source material came from institutional catalogs and official state program standards, not from the model's general knowledge.
+- **Review stayed human.** Every consolidated description and every RIASEC alignment was checked against source material before it entered the model.
+- **Edge cases stayed human.** The decision to create a new career cluster, and the reasoning about which majors belonged where, was mine. AI is useful for volume, not for taxonomy design.
+- **The process outlived the task.** The method was documented well enough to be reused on a different dataset.
+
+## Outcome
+
+The completed model was delivered to T3's Data & Analytics team and shared with the external web development vendor as the content foundation for the Explore Majors feature.
+
+[FILL IN — What shipped? Did the feature launch? Is it live? If you don't know because you moved departments, say exactly that: "I transitioned to a different department before implementation completed, so I don't have visibility into the final shipped experience." That's an honest and completely acceptable answer.]
+
+[FILL IN — Any measurable outcome? Student usage, time saved, vendor implementation speed, anything the D&A team reported back?]
+
+## What I'd Do Differently
+
+[FILL IN — this section matters more than you'd think. Hiring managers read it as evidence of judgment. Some candidates for what to write about:]
+
+- *The divergence from the state taxonomy needs formal documentation.* I extended the framework for good reasons, but I'd write a short standard explaining where and why the model departs from Texas CTE clusters, so future maintainers don't mistake the additions for state-defined ones.
+- *I'd validate cluster placement with students, not just with logic.* My groupings are defensible, but I never tested whether a 9th grader looking for psychology would think to look under Humanities & Social Sciences. That's a card sort I should have run.
+- *[Anything about the graduate/occupational tables, the "Majors copy" duplicate field, or governance for when catalogs change annually.]*
+
+---
+
+## Artifacts
+
+[Attach screenshots: the Undergraduate Degrees grid showing RIASEC tags and CIP codes; the Career Clusters table; the Programs of Study table showing the Humanities & Social Sciences additions; the Degree Options controlled vocabulary; a linked-record detail view showing Consolidated Descriptions.]
