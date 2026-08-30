@@ -1,0 +1,196 @@
+# The Lifestyle Calculator: Teaching Cost of Living Through Consequence
+
+<div className="not-prose my-10 grid grid-cols-[6.5rem_1fr] gap-x-6 gap-y-2 border-l border-neutral-200 pl-6 text-sm leading-6">
+  <div className="text-neutral-500">Role</div>
+  <div>Sr. Manager, Digital Content Strategy — T3 Partnership</div>
+  <div className="text-neutral-500">Product</div>
+  <div>Standalone tool built for Pathways to Careers (P2C)</div>
+  <div className="text-neutral-500">Timeframe</div>
+  <div>February – July 2026</div>
+  <div className="text-neutral-500">Scope</div>
+  <div>Solo — competitive research, content design, information architecture, data sourcing, build, user research</div>
+  <div className="text-neutral-500">Stack</div>
+  <div>Next.js, Vercel, Supabase, Airtable, RIASEC interest framework</div>
+</div>
+
+---
+
+## Context
+
+Texas already has a tool for this job. Texas Reality Check is a state-provided
+calculator that shows students what salary their desired lifestyle requires, and
+it's the kind of thing our platform should have been able to simply point
+students toward.
+
+I walked through it the way a student would. Three problems stood out.
+
+It was visually flat — a form, not an experience, with nothing in it that would
+make a fifteen-year-old want to reach the end. The numbers didn't feel real:
+generic statewide figures rather than what things cost where a student actually
+lives. And the cost categories were incomplete. Most conspicuously there were no
+subscriptions, which for this generation is a constant and meaningful share of
+monthly spending. A budget tool that omits them teaches a version of adult life
+that doesn't exist.
+
+So I built a replacement.
+
+## The Problem
+
+The core tension was between two failure modes. Too little detail and the tool
+lies to students about what life costs. Too much and a teenager abandons it three
+screens in.
+
+Underneath that sat a second problem. Many of the decisions in a monthly budget
+require vocabulary students haven't acquired yet. You can't meaningfully choose a
+car loan without knowing what interest is. You can't choose an internet plan
+without knowing what upload speed buys you. A tool that asks students to make
+these choices without teaching them isn't a learning tool — it's a test they're
+set up to fail.
+
+## What I Built
+
+A fifteen-step guided flow covering **28 Texas regions**, walking a student from
+where they'd live through housing, phone, phone plan, internet, utilities,
+streaming, subscriptions, food, transportation, fuel, and insurance, out to a
+single number: the minimum annual salary their chosen lifestyle requires.
+
+Costs change by region. A student in Fort Worth and a student in the Panhandle
+reach different numbers from identical choices, which is the point.
+
+## Key Decisions
+
+### Show the consequence, not the verdict
+
+A running total sits fixed at the bottom of every screen and updates on each
+selection. A student choosing a car watches the figure move before they commit to
+anything.
+
+Most budget tools withhold the total until a results page, which turns the
+exercise into a quiz with a score at the end. Putting the number in front of the
+decision makes the interface itself the lesson — the student learns the
+relationship between choice and cost by watching it happen, fifteen times, rather
+than being told about it once.
+
+### Teach at the point of decision
+
+Financial literacy content is embedded in the screens where it's needed, not
+front-loaded into an onboarding module students would skip. Interest and
+refinancing are explained on the car loan screen. Speed tiers are explained where
+internet plans are chosen. Tooltips carry the detail for students who want it and
+stay out of the way for students who don't.
+
+The design principle: a concept is teachable at the moment a student needs it to
+make a choice, and nearly unteachable fifteen minutes earlier.
+
+### Store nothing
+
+The tool runs entirely local. No student responses are written to the database,
+the data model is explained in plain language on screen, and shared devices get a
+prompt to reset before the next user.
+
+This started as a privacy decision and turned out to be a product decision too.
+Students on school-issued Chromebooks are minors using shared hardware, and the
+safest data is data you never collect. It also meant the tool could be piloted
+without a data-sharing conversation with seven districts.
+
+### Instrument the feedback loop
+
+A feedback button on every screen captures which step the student is on and
+routes the report directly to me. Students could flag something broken or ask for
+more detail on the exact screen where the confusion happened, without leaving the
+flow or knowing who to email.
+
+## Testing It Against the Incumbent
+
+I ran a small qualitative study with six students using a within-subjects design.
+Each student completed Texas Reality Check first, then the Lifestyle Calculator,
+then a comparison survey, followed by a 30-minute semi-structured interview.
+
+Testing the incumbent first mattered — it gave students a reference point, so
+their reactions to my tool were comparative rather than absolute.
+
+All six found the Lifestyle Calculator more vibrant, engaging, realistic, and
+enjoyable than the state tool. I hold that result loosely: six students who know
+which tool is mine is not an unbiased sample. The interviews were more useful than
+the survey.
+
+**A less frequent grocery cadence.** I'd built groceries as a weekly purchase,
+reasoning that produce and bread run out fast. Students wanted bi-weekly or
+monthly. I still think weekly is closer to how the expense behaves, but the
+disagreement was the useful part: the tool assumed a familiarity with running a
+household that these students don't have yet, and I couldn't see the assumption
+because I have it.
+
+**More subscription options.** Subscriptions were the category I added because
+the state tool omitted it. Students wanted it deeper still — which confirmed the
+premise and told me I'd underbuilt the very thing I'd correctly identified as
+missing.
+
+**A natural session length.** Asked how long the tool should take, one student
+framed it as a class period. That reframed the design target: not "as short as
+possible," but "one instructional block" — a different and more achievable
+constraint, and one a teacher can schedule around.
+
+## The Feature I Turned Off
+
+Before student testing, I connected the calculator to Gemini to generate job
+suggestions at the end of the flow, matched to a student's RIASEC code and their
+calculated minimum salary. It worked, in the sense that it returned results.
+
+I disabled it before testing with students, for security reasons. It stayed off.
+
+I think that was right on more than security grounds. The feature was unrefined —
+I had done nothing about hallucinated job titles, salary figures that might not
+hold in the Texas market, or roles that don't meaningfully exist in DFW. Career
+suggestions shown to a fifteen-year-old carry weight. Putting an unvalidated
+version in front of real students to see how it performed would have been using
+them to test something I already knew wasn't ready.
+
+**What I'd have built next.** Not a direct model call, but a retrieval layer: a
+maintained database of current DFW openings plus employer partner roles sponsored
+through P2C's Workforce department, with the model constrained to that set rather
+than generating freely. Every suggestion would be grounded in a job that
+demonstrably exists, and the tool would connect to partnerships the organization
+already has. The model's job becomes matching and explaining, not inventing.
+
+## Where It Ended Up
+
+Student testing concluded in July 2026. The organization ultimately proceeded with
+a vendor-developed version of the tool, and my build was set aside with the
+research findings unimplemented.
+
+The CEO has since identified my version as the target state for the eventual full
+product, pending an in-house developer to build it. So this sits in an unusual
+place: not shipped, but serving as the specification for what ships next — a
+reasonable outcome for a prototype, if not the one I wanted.
+
+## What I'd Do Differently
+
+[FILL IN — yours to write. Some candidates, none of which you have to use:]
+
+- *I tested against the incumbent but never against no tool at all.* I know
+  students preferred mine to Texas Reality Check. I don't know whether either
+  changed how they think about cost of living, which is the actual goal.
+- *Six students who knew the tool was mine.* A neutral facilitator, or students
+  who didn't know the author was in the room, would have produced findings I
+  could trust further.
+- *I built the subscriptions category on my own read of what students spend on.*
+  Given they asked for more, that category specifically should have been shaped by
+  student input before the build rather than after.
+- *[Something about the grocery-cadence finding — whether you'd change it, teach
+  it, or leave it — if you've landed on a view.]*
+
+---
+
+## Artifacts
+
+[Screenshots: the region selection map; a location result showing population,
+median income, and top high-wage career; the housing step; the phone step with
+the 2030 framing; the phone plan comparison; the internet plan tiers; streaming;
+the subscriptions accordion; the running total in the footer across steps.]
+
+**Before publishing:** confirm with T3 that internal screens can be shared
+publicly. Caption screenshots with a capture date — the pricing shown will age.
+And verify the February–July dates against artifacts you can point at (Airtable
+base creation, Vercel deployment history, git commits, the calendar invite for the
+February 6 presentation) rather than reconstructed memory.
