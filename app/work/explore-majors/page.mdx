@@ -6,7 +6,7 @@
   <div className="text-neutral-500">Product</div>
   <div>Pathways to Careers (P2C), a college and career readiness platform</div>
   <div className="text-neutral-500">Timeframe</div>
-  <div>July 2024 – July 2026</div>
+  <div>June 2026 – July 2026 </div>
   <div className="text-neutral-500">Scope</div>
   <div>Solo content strategy and content modeling; handed off to Data &amp; Analytics and external web development</div>
   <div className="text-neutral-500">Tools</div>
@@ -21,23 +21,92 @@ Pathways to Careers (P2C) is a college and career readiness platform serving rou
 
 P2C's exploration experience was designed as a three-step progression: students move from **Explore Career Clusters** to **Explore Majors** to **Explore Programs**, narrowing from a broad interest area to a specific degree at a specific institution they could actually apply to.
 
-Explore Majors was the middle step — and the one with no underlying data to support it.
+Built in roughly three weeks, Explore Majors was the middle step — and the one with no underlying data to support it.
 
 ## The Problem
 
-The product team wanted students to browse majors offered by our eight partner institutions of higher education, filtered by interest and connected to the career clusters they'd already explored. Four things stood in the way:
+The product team wanted students to browse majors offered by our eight partner
+institutions, filtered by interest and connected to the career clusters they
+already knew. Four things stood in the way.
 
-**The source data was eight incompatible catalogs.** Each institution published its own program list with its own naming conventions, its own credential labels, and its own descriptions. The same field of study appeared as "Digital Media Studies" at one school and "Film/Radio/Television/Digital Media" at another. Nothing joined.
+**The source data was eight incompatible catalogs.** Each institution published
+its own program list with its own naming conventions and its own credential
+labels. Nothing joined them.
 
-**Texas has a career cluster taxonomy, and it doesn't cover higher education.** The state's Career and Technical Education (CTE) framework organizes 14 career clusters around workforce and technical pathways. It works well for high school CTE programs. It does not accommodate the academic majors a comprehensive university offers — there is no home in it for Philosophy, Anthropology, English Literature, Music, or Comparative Race and Ethnic Studies for example.
+**The taxonomy was built for a different job.** Texas's CTE career clusters
+organize secondary pathways toward certifications and associate's degrees in
+high-wage, high-demand occupations. That purpose is visible in the structure:
+Cosmetology and Personal Care Services sits in the same framework as Legal
+Studies, which is coherent if you're sorting occupational training and much less
+so if you're sorting four-year degrees. The clusters were never designed to
+align to college majors, and using them that way was a category error I inherited
+rather than one I could avoid.
 
-**Credential types were inconsistent across institutions.** A two-year college's "Certificate Level I" and a university's "Field of Study" and "Minor" aren't the same thing, but students comparing options need to understand them side by side.
+**The state narrowed the framework mid-project.** TEA's 2024–25 Programs of Study
+Refresh renamed the STEM career cluster to Engineering and redistributed its
+programs of study to Health Science, Information Technology, and Energy. For
+secondary CTE this was a clean reorganization — nothing was orphaned. For my
+purposes it removed the one cluster elastic enough to accommodate academic
+disciplines by association. Chemistry, Mathematics, Physics, and Statistics can
+sit under "STEM" without much strain. Under "Engineering," narrowed to four
+defined engineering pathways, they cannot.
 
-**Nothing connected majors to student interest.** P2C already used RIASEC interest inventories elsewhere in the platform. Explore Majors needed to inherit that, and no institution publishes RIASEC codes with its catalog.
+**Nothing connected majors to student interest.** P2C already used RIASEC
+interest inventories elsewhere in the platform. Explore Majors needed to inherit
+that vocabulary rather than invent a parallel one.
+
+And I could not replace the taxonomy. Career clusters are the first thing a
+student encounters when they join P2C in middle school, and the platform's
+designation pathways are built on them. A student who picked a cluster in
+seventh grade needed to still recognize the system in eleventh. Whatever I built
+had to extend the existing framework without superseding it.
+
+That constraint left 38 of 539 degree records with no defensible placement.
 
 ## What I Built
 
-A relational content model in Airtable with nine linked tables, covering **539 undergraduate degree records** across **8 institutions**, organized into **71 programs of study** and **15 career clusters**.
+A relational content model in Airtable with nine linked tables, covering 539
+undergraduate degree records across eight institutions, organized into 15 career
+clusters and 71 programs of study. Federal CIP codes served as the join key
+across institutions, and RIASEC codes carried interest matching through from the
+rest of the platform.
+
+The structural work came first, because the taxonomy had to hold before the
+records could be placed in it.
+
+### Extending the taxonomy
+
+Six programs of study didn't exist in the state framework. Rather than treat that
+as one problem with one solution, I placed each at the smallest level of the
+hierarchy that would resolve it.
+
+**Where an existing cluster already fit, I added a program of study.** Fine &
+Performing Arts went under Arts, A/V Technology and Communications. The cluster
+was sound; it was simply missing a grouping that four-year institutions offer and
+secondary CTE does not.
+
+**Where a state change would have broken postsecondary coverage, I declined to
+adopt it.** TEA renamed the STEM cluster to Engineering. I kept the broader STEM
+label and added Natural Sciences & Mathematics beneath it. This is the one place
+the model knowingly diverges from the current state framework, and it was a
+trade: alignment with TEA's latest naming, in exchange for somewhere legitimate
+to put chemistry, physics, mathematics, and statistics. Renaming the cluster
+would have forced those majors into a cluster defined around engineering
+pathways, which would have been visible to students as a wrong answer.
+
+**Where nothing existed at any level, I added a cluster.** Humanities & Social
+Sciences, with four programs of study — Behavioral & Social Sciences, Humanities
+& Liberal Arts, History & Global Studies, and Languages & Cultural Studies. This
+was the last resort, not the first move, and it was reserved for the 38 records
+that had no defensible home anywhere in the existing structure.
+
+The principle underneath all three: intervene at the lowest level that solves the
+problem. Adding a cluster changes what every student sees at step one of the
+journey. Adding a program of study inside a cluster they already recognize
+changes almost nothing. The cost of each intervention should match the size of
+the gap it closes.
+
+### The content model
 
 | Table | What it holds |
 |---|---|
@@ -45,12 +114,29 @@ A relational content model in Airtable with nine linked tables, covering **539 u
 | Career Clusters | Top-level interest areas, with descriptions and URL slugs |
 | Programs of Study | Mid-level groupings within clusters |
 | Majors | Canonical major records with consolidated descriptions |
-| Degree Options | Controlled vocabulary of credential types |
-| Undergraduate Degrees | Institution-specific offerings, the join layer |
-| Graduate Degrees / Graduate Programs | Parallel structure for graduate study |
-| Occupational Programs | Workforce and technical credentials |
+| Undergraduate Degrees | Junction table — one record per institution × major |
+| Graduate Programs | Canonical graduate-level major records |
+| Graduate Degrees | Junction table for graduate offerings |
+| Occupational Programs | Certificate and workforce credential records |
+| Degree Options | Controlled vocabulary for credential types |
 
-Each institution-specific record carries: major name, institution, degree options offered, campus location(s), CIP code, RIASEC tags, ordered RIASEC code, program of study, and career cluster.
+The two junction tables are what make the model work. A student asking "where can
+I study this?" needs one page per major listing every institution that offers it
+— which means the major has to exist once, canonically, and the
+institution-specific detail has to hang off it rather than duplicate it.
+
+### Canonical descriptions
+
+Each major carries a Consolidated Description: an institution-neutral synthesis
+written across all partner offerings for that major, with school-identifying
+language stripped out. Institution-specific detail lives on the junction records
+instead.
+
+This was a governance decision as much as an editorial one. Eight catalogs
+described the same major eight ways, each written to recruit for that school. A
+student comparing programs needs one neutral account of what the major is,
+then the differences between schools — not eight admissions pitches to reconcile
+on their own.
 
 ## Key Decisions
 
