@@ -17,6 +17,12 @@ const work = [
     kind: "Content operations",
     blurb: "Naming standards and lifecycle governance for 238 instructional modules.",
   },
+  {
+  slug: "gen-alpha-research",
+  title: "Plugged In but Disconnected",
+  kind: "Research",
+  blurb: "What students actually say about AI in their classrooms.",
+  },
 ];
 
 export default function Work() {
