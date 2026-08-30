@@ -1,0 +1,208 @@
+# The Video Content System: Governing a Library Three Departments Were Writing
+
+<div className="not-prose my-10 grid grid-cols-[6.5rem_1fr] gap-x-6 gap-y-2 border-l border-neutral-200 pl-6 text-sm leading-6">
+  <div className="text-neutral-500">Role</div>
+  <div>Sr. Manager, Digital Content Strategy — T3 Partnership</div>
+  <div className="text-neutral-500">Product</div>
+  <div>Pathways to Careers (P2C), a college and career readiness platform</div>
+  <div className="text-neutral-500">Timeframe</div>
+  <div>2024 – 2026</div>
+  <div className="text-neutral-500">Scope</div>
+  <div>Content model, taxonomy, naming standards, editorial workflow, production, and on-camera talent</div>
+  <div className="text-neutral-500">Tools</div>
+  <div>Airtable, Asana, Milanote, Frame.io, Box, Premiere Pro, After Effects, YouTube</div>
+</div>
+
+---
+
+## Context
+
+P2C's instructional video library serves roughly 10,000 students and family members
+across seven North Texas school districts. The content is written by three
+departments for three different audiences:
+
+**Postsecondary Pathways (PSP)** — high school students, ninth through twelfth
+grade, with content sequenced so a student sees different material each year.
+**Workforce Development (WF)** — eleventh and twelfth graders, organized into
+Career Scholar Journey and a set of Durable Skills badges, each earned by
+completing consecutive modules in a topic. **Family Engagement (FE)** — parents
+and family members of middle school students.
+
+Scripts were written by leaders in each department. None had been hired to write
+instructional scripts, and none had been trained to. I produced the videos.
+
+## The Problem
+
+Three departments writing for three audiences produced three sets of naming and
+organizing conventions, none of which agreed with the others. Add grade-level
+targeting, multi-part modules, and content meant to be viewed in a specific order,
+and the library became difficult to search, difficult to review, and difficult to
+tell apart.
+
+The most expensive symptom showed up on set. Talent — T3 staff, most of them
+advisors who work in the schools — would read a script and ask whether we had
+already filmed it. They were right to ask. Modules meant to be distinct, aimed at
+different grade levels and building on each other, had been written so similarly
+that the people delivering them couldn't tell them apart.
+
+## What I Built
+
+### A naming convention with a variable second slot
+
+Every video carries a long name and a short name, generated from the same formula.
+
+> **Detailed:** Category – Section # "Topic" – Module # "Specific Skill/Concept" – Part # "Name of Part"
+>
+> **Shortened:** `[Category Code] [Section].[Module] "Short Descriptor"`
+
+So `Family Engagement – Section 4 "8th Grade Blueprint" – Module 5 "Maximizing
+School Resources"` becomes `FE 4.5 "Maximizing Resources"`.
+
+The part worth explaining is what goes in the module slot, because it isn't the
+same across categories.
+
+For Family Engagement and Workforce Development, it's a sequence number — those
+categories address one audience, and order within a section is what matters. For
+Postsecondary Pathways, it's the **grade level**. `PSP 1.9` through `PSP 1.12` are
+the same section delivered across four years. `PSP 5.11 [P.2]` reads as
+Postsecondary Pathways, Section 5, eleventh grade, part two.
+
+PSP content is grade-sequenced, so the property people most needed to read off an
+identifier was audience, not order. Encoding it meant anyone could tell at a glance
+who a video was for and where it sat in a four-year progression, without opening
+anything.
+
+**That decision did something I didn't design it for.** Once grade level was in
+the identifier, near-duplicate content became visible. Four modules numbered as a
+progression across four grades, all making the same argument in the same order, are
+obviously not a progression. Under sequential numbering they had just been four
+scripts. The naming system surfaced a content defect the writing process had
+concealed.
+
+### An identifier that survives the taxonomy
+
+Every record also carries a unique ID in the form `[121-040425]` — an accession
+number and the date recorded. It has no relationship to the naming convention.
+
+This is the decision that made everything else revisable. I changed the taxonomy
+partway through: the early Asana-era numbering was sequential, and I moved PSP to
+grade-level numbering once it was clear that audience mattered more than order. If
+identifiers had been derived from names, that revision would have orphaned the
+library. Instead, `[121-040425]` points at the same asset regardless of what it's
+called, and a `Video Code (Archived)` field preserves superseded codes.
+
+Names describe. Identifiers point. Conflating them means you can never fix a name.
+
+### A content model with a real lifecycle
+
+I built a relational base in Airtable with linked tables for the video library,
+departments, staff, video topics, scripts, and comprehension questions — the last
+maintained by a colleague, cross-referenced to videos so she could review and
+rewrite against the right assets.
+
+The status field carries eleven states, separating script progress from video
+progress from publication:
+
+> Planned → Script drafted → Script in review → Script finalized → Video recorded
+> → Video draft in review → Uploaded to YouTube → Ready to publish on P2C → Live
+> on P2C
+
+Plus Scrapped and Needs to be checked. YouTube and P2C are tracked as distinct
+surfaces because an asset can be live on one and not the other, and conflating
+them hides real gaps.
+
+Records also carry version number, target grade levels, target semester,
+department, talent, date recorded, date uploaded, and role-based views so
+collaborators see the slice relevant to them rather than the whole base.
+
+**The library is 238 records.** Roughly 165 are live on the platform; the rest sit
+in script or production stages, with 8 scrapped. About 80 of them — the entire
+Workforce Development set — I produced in a four-week span as sole producer and
+primary on-camera talent.
+
+### A migration under a running production line
+
+Production ran in Asana for roughly eighteen months before the Airtable base
+existed. I built the base in September 2025 and backfilled the existing library
+into it while new content kept shipping.
+
+Before proposing the tooling, I documented what we actually had: scripts living
+simultaneously in Box, email, Asana task descriptions, and Milanote, in four
+different formats; footage moving between editors on physical drives; Box failing
+to mount in Premiere despite being installed. The audit was the business case.
+
+## The Governance Problem I Couldn't Fix
+
+Scripts arrived marked approved. Many were drafted with AI and shipped without
+substantive review by the department that owned them. The results were variously
+incorrect, vague, or misaligned with the grade level they targeted — on subjects
+like TSIA2 exemptions, dual credit, and CCMR requirements, where wrong information
+sends a student down the wrong path.
+
+Roughly thirty scripts required correction. About half I caught and pushed back
+before production. The other half we caught on set, with talent and crew already
+assembled, costing around thirty minutes each to fix before filming could resume.
+
+**The error-catching capacity existed. It was in the wrong place.** The advisors
+delivering the scripts knew what was true because they work with students on this
+daily. That expertise was available to the organization — just not in the script
+pipeline. It was on set, discovering problems at the most expensive possible
+moment.
+
+I proposed the fix in writing to everyone involved: scripts needed human subject
+review before submission, with examples of what was reaching me. It wasn't adopted.
+The process didn't improve, and we finished the library under those conditions.
+
+After a leadership change, the departments producing new scripts were ones I'd
+trained on the process directly. The quality difference has been substantial. The
+volume has been small.
+
+## What I Proposed Next
+
+I mapped the workflow as a swimlane with four roles — project requester, Sr.
+Manager, VP Associate, and interns — with explicit handoffs and a day-numbered
+schedule from request through final approval by Day 30.
+
+The first step is an approval gate. A request is approved or denied, and a denied
+request returns to the requester to adjust and resubmit before anything else
+happens. That gate is precisely what was missing when unreviewed scripts arrived
+already marked approved: there was no defined point at which someone could say not
+yet.
+
+## What I'd Do Differently
+
+**I built a status model that depended on people outside my team to update it, and
+I didn't audit those states.**
+
+Roughly fifty videos sat at "Ready to publish on P2C" in the database. They were
+live on the platform — had been for months. The transition was owned by the
+developer, who never flipped the field, and I found it querying my own base long
+after the fact. For months the system reported a backlog that didn't exist.
+
+I had already identified this class of risk: there's a `Status Double Checked`
+field in the base, with a note recording the last audit date. I built the control
+and then scoped it to the states my own team owned.
+
+That's the wrong boundary. The states most likely to drift are exactly the ones
+handed off to someone who doesn't depend on the field being accurate. The fix is
+either to derive publication status from the platform rather than setting it by
+hand, or to define the audit around handoffs specifically — the seams, not the
+sections.
+
+A content model's weakest point is rarely its schema. It's the human transitions
+the schema assumes will happen.
+
+---
+
+## Artifacts
+
+[Screenshots: the naming formula reference; department section lists for Family
+Engagement, Postsecondary Pathways, and Workforce Development; the Airtable Video
+Library grid showing unique IDs, statuses, versions, and grade targeting; Milanote
+storyboard boards with color-coded production state; the Asana production board;
+the tech stack audit; the swimlane workflow diagram.]
+
+**Before publishing:** confirm with T3 that internal screens can be shared. Verify
+the live-on-platform count from a grouped view rather than an estimate. And check
+the start date — some records are dated January 2024, which may fall under your
+prior title rather than Sr. Manager, Digital Content Strategy.
