@@ -61,7 +61,7 @@ export default function Home() {
       <p className="mt-16 text-sm text-neutral-500">
         <a
           href="mailto:vgfortworth@gmail.com"
-          className="text-neutral-700 underline underline-offset-4 decoration-neutral-300 hover:decoration-neutral-700"
+          className="text-neutral-700 underline underline-offset-4 decoration-neutral-300 hover:text-purple-800 hover:decoration-purple-800"
         >
           vgfortworth@gmail.com
         </a>
@@ -70,7 +70,7 @@ export default function Home() {
           href="https://www.linkedin.com/in/valerie-gonzalez-ed-d-9131657b/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-neutral-700 underline underline-offset-4 decoration-neutral-300 hover:decoration-neutral-700"
+          className="text-neutral-700 underline underline-offset-4 decoration-neutral-300 hover:text-purple-800 hover:decoration-purple-800"
         >
           LinkedIn
         </a>
