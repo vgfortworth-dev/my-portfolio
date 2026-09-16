@@ -28,7 +28,6 @@ export default function RootLayout({ children }) {
             Valerie Gonzalez
           </a>
           <span className="space-x-4 text-neutral-600">
-            <a href="/work" className="transition-colors hover:text-purple-800">Work</a>
             <a href="/about" className="transition-colors hover:text-purple-800">About</a>
           </span>
         </nav>

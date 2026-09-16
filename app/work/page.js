@@ -31,9 +31,9 @@ export default function Work() {
       <h1 className="text-sm text-neutral-500">Selected work</h1>
       <div className="mt-6">
         {work.map((item) => (
-          <a key={item.slug} href={"/work/" + item.slug} className="block border-t border-neutral-200 py-5">
+          <a key={item.slug} href={"/work/" + item.slug} className="group block border-t border-neutral-200 py-5">
             <div className="flex items-baseline justify-between gap-3">
-              <span className="font-medium">{item.title}</span>
+              <span className="font-medium transition-colors group-hover:text-purple-800">{item.title}</span>
               <span className="text-xs text-neutral-500">{item.kind}</span>
             </div>
             <p className="mt-1 text-sm text-neutral-600">{item.blurb}</p>
