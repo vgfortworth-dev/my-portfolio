@@ -47,7 +47,7 @@ export default function Home() {
           <a
             key={item.slug}
             href={"/work/" + item.slug}
-            className="block border-t border-neutral-200 py-5"
+            className="group block border-t border-neutral-200 py-5"
           >
             <div className="flex items-baseline justify-between gap-3">
               <span className="font-medium transition-colors group-hover:text-purple-800">{item.title}</span>
