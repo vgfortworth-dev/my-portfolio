@@ -4,8 +4,8 @@ export default function About() {
       <h1 className="text-sm text-neutral-500">About</h1>
       <div className="mt-6 space-y-4 text-neutral-800">
         <p>
-          I&apos;m a content strategist in Fort Worth, Texas. For the past four years
-          I&apos;ve worked at T3 Partnership on Pathways to Careers, a college and
+          I&apos;m a content strategist in Fort Worth, Texas. Since 2023 I&apos;ve
+          worked at T3 Partnership on Pathways to Careers, a college and
           career readiness platform used by about 10,000 students and families
           across seven North Texas school districts.
         </p>
@@ -16,9 +16,8 @@ export default function About() {
           how Gen Alpha students engage with AI.
         </p>
         <p className="text-neutral-600">
-          My current title is Senior Manager of Marketing and Communications, the
-          result of an organizational restructure. Content systems are the through
-          line, and the work I want to keep doing.
+          My current title is Senior Manager of Marketing and Communications. 
+          Content systems are the through line, and the work I want to keep doing.
         </p>
       </div>
     </main>
