@@ -13,9 +13,11 @@ export default function About() {
           Most of my work has been structural — designing the taxonomies, content
           models, and editorial systems that platform content depends on. I hold an
           Ed.D. in Learning and Organizational Change from Baylor, where I studied
-          how Gen Alpha students engage with AI.
+          how Gen Alpha students students at a public school district in North Texas
+          describe their causality orientations in educational experiences 
+          with AI and emerging technologies.
         </p>
-        <p className="text-neutral-600">
+        <p className="text-neutral-800">
           My current title is Senior Manager of Marketing and Communications. 
           Content systems are the through line, and the work I want to keep doing.
         </p>
